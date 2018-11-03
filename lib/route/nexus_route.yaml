@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Route
 metadata:
-  name: ${JENKINS_SERVICE_NAME}
+  name: nexus-route
 spec:
   tls:
     insecureEdgeTerminationPolicy: Redirect
