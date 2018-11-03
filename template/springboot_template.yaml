@@ -1,18 +1,12 @@
 apiVersion: template.openshift.io/v1
 kind: Template
 labels:
-  group: springboot-s2i
-  template: springboot-s2i
+  template: springboot-template
 metadata:
   annotations:
-    description: springboot-s2i
+    description: springboot-template
     tags: quickstart
-  creationTimestamp: 2018-07-26T02:05:46Z
-  name: springboot-s2i
-  namespace: openshift
-  resourceVersion: "3350145"
-  selfLink: /apis/template.openshift.io/v1/namespaces/openshift/templates/springboot-s2i
-  uid: 68e320de-9078-11e8-a0af-005056b72a0a
+  name: springboot-template
 objects:
 - apiVersion: v1
   kind: BuildConfig
@@ -146,14 +140,14 @@ parameters:
 - description: The name for the application.
   name: APPLICATION_NAME
   required: true
-  value: cmdb-access
+  value: springboottest
 - description: Git source URI for application
   name: SOURCE_URL
   required: true
-  value: http://gogs-cicd.qyos.com/gogs/demo.git
+  value: https://github.com/gazgeek/springboot-helloworld.git
 - description: Git branch/tag reference
   name: SOURCE_REF
-  value: develop
+  value: master
 - description: Service port
   name: PORT
   value: "8080"

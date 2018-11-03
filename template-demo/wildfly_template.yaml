@@ -1,12 +1,12 @@
 apiVersion: template.openshift.io/v1
 kind: Template
 labels:
-  template: springboot-template
+  template: wildfly-template
 metadata:
   annotations:
-    description: springboot-template
+    description: wildfly-template
     tags: quickstart
-  name: springboot-template
+  name: wildfly-template
 objects:
 - apiVersion: v1
   kind: BuildConfig
@@ -77,9 +77,8 @@ objects:
       sourceStrategy:
         forcePull: true
         from:
-          kind: ImageStreamTag
-          name: springboot-maven3-centos:latest
-          namespace: openshift
+          kind: DockerImage
+          name: docker-registry.default.svc:5000/openshift/wildfly-s2i-demo
       type: Source
     triggers:
     - github:
@@ -140,11 +139,11 @@ parameters:
 - description: The name for the application.
   name: APPLICATION_NAME
   required: true
-  value: springboottest
+  value: wildfly
 - description: Git source URI for application
   name: SOURCE_URL
   required: true
-  value: https://github.com/gazgeek/springboot-helloworld.git
+  value: https://github.com/openshift/openshift-jee-sample.git
 - description: Git branch/tag reference
   name: SOURCE_REF
   value: master

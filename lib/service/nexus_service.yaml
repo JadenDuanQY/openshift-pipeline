@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: nexus
+  name: nexus-service
+  namespace: jaden-test
+spec:
+  clusterIP: None
+  ports:
+  - port: 4873
+    protocol: TCP
+    targetPort: 4873
+    name: nexus
+  selector:
+    app: nexus
+  sessionAffinity: None
+  type: ClusterIP

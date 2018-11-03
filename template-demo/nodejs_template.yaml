@@ -1,12 +1,12 @@
 apiVersion: template.openshift.io/v1
 kind: Template
 labels:
-  template: j2ee-template
+  template: nodejs-template
 metadata:
   annotations:
-    description: j2ee-template
-    tags: quickstart
-  name: j2ee-template
+    description: nodejs-template
+    tags: nodejs
+  name: nodejs-template
 objects:
 - apiVersion: v1
   kind: BuildConfig
@@ -78,7 +78,7 @@ objects:
         forcePull: true
         from:
           kind: ImageStreamTag
-          name: wildfly:10.1
+          name: nodejs:${NODEJS_VERSION}
           namespace: openshift
       type: Source
     triggers:
@@ -140,14 +140,17 @@ parameters:
 - description: The name for the application.
   name: APPLICATION_NAME
   required: true
-  value: j2ee
+  value: nodejstest
 - description: Git source URI for application
   name: SOURCE_URL
   required: true
-  value: https://github.com/openshift/openshift-jee-sample.git
+  value: https://github.com/Azure-Samples/nodejs-docs-hello-world.git
 - description: Git branch/tag reference
   name: SOURCE_REF
   value: master
 - description: Service port
   name: PORT
-  value: "8080"
+  value: '1337'
+- description: nodejs version
+  name: NODEJS_VERSION
+  value: '6'

@@ -1,12 +1,12 @@
 apiVersion: template.openshift.io/v1
 kind: Template
 labels:
-  template: j2ee-template
+  template: python-template
 metadata:
   annotations:
-    description: j2ee-template
-    tags: quickstart
-  name: j2ee-template
+    description: python-template
+    tags: python
+  name: python-template
 objects:
 - apiVersion: v1
   kind: BuildConfig
@@ -77,9 +77,8 @@ objects:
       sourceStrategy:
         forcePull: true
         from:
-          kind: ImageStreamTag
-          name: wildfly:10.1
-          namespace: openshift
+          kind: DockerImage
+          name: docker-registry.default.svc:5000/openshift/s2i-python-demo
       type: Source
     triggers:
     - github:
@@ -140,14 +139,17 @@ parameters:
 - description: The name for the application.
   name: APPLICATION_NAME
   required: true
-  value: j2ee
+  value: django
 - description: Git source URI for application
   name: SOURCE_URL
   required: true
-  value: https://github.com/openshift/openshift-jee-sample.git
+  value: https://github.com/JadenDuanQY/django-helloworld.git
 - description: Git branch/tag reference
   name: SOURCE_REF
   value: master
 - description: Service port
   name: PORT
-  value: "8080"
+  value: '8000'
+- description: python version
+  name: PYTHON_VERSION
+  value: '2.7'
