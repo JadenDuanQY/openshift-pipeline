@@ -6,11 +6,10 @@ metadata:
   name: nexus-service
   namespace: jaden-test
 spec:
-  clusterIP: None
   ports:
-  - port: 4873
+  - port: 8081
     protocol: TCP
-    targetPort: 4873
+    targetPort: 8081
     name: nexus
   selector:
     app: nexus
