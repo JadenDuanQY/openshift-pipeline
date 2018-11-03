@@ -1,0 +1,23 @@
+kind: Deployment
+apiVersion: extensions/v1beta1
+metadata:
+  name: verdaccio-deployment
+  namespace: jaden-ci
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: verdaccio
+  template:
+    metadata:
+      labels:
+        app: verdaccio
+    spec:
+      hostname: verdaccio
+      dnsPolicy: ClusterFirst
+      containers:
+      - name: verdaccio
+        image: docker-registry.default.svc:5000/openshift/verdaccio:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 4873

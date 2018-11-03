@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: pypiserver
+  name: pypiserver-service
+  namespace: jaden-ci
+spec:
+  clusterIP: None
+  ports:
+  - port: 4873
+    protocol: TCP
+    targetPort: 4873
+    name: pypiserver
+  selector:
+    app: pypiserver
+  sessionAffinity: None
+  type: ClusterIP

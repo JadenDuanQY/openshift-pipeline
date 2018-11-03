@@ -1,0 +1,50 @@
+apiVersion: v1
+items:
+- apiVersion: v1
+  kind: BuildConfig
+  metadata:
+    annotations:
+      openshift.io/generated-by: OpenShiftWebConsole
+    labels:
+      app: mybank
+    name: mybank
+    namespace: jaden
+    resourceVersion: "26893729"
+  spec:
+    nodeSelector: null
+    output:
+      to:
+        kind: ImageStreamTag
+        name: mybank:latest
+    postCommit: {}
+    resources: {}
+    runPolicy: Serial
+    source:
+      git:
+        ref: master
+        uri: https://github.com/nichochen/mybank-demo-maven
+      type: Git
+    strategy:
+      sourceStrategy:
+        from:
+          kind: ImageStreamTag
+          name: wildfly:10.1
+          namespace: openshift
+      type: Source
+    triggers:
+    - generic:
+        secret: 6f417a060d914c15
+      type: Generic
+    - github:
+        secret: e1e5d2ee7e53ed8a
+      type: GitHub
+    - imageChange:
+        lastTriggeredImageID: openshift/wildfly-101-centos7@sha256:ad9b54504eabd6f7fb190da0619f9ed1d87df4dff5d0f31e4b0766525cac096d
+      type: ImageChange
+    - type: ConfigChange
+  status:
+    lastVersion: 1
+kind: List
+metadata: {}
+resourceVersion: ""
+selfLink: ""

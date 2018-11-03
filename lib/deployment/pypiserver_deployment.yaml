@@ -1,0 +1,30 @@
+kind: Deployment
+apiVersion: extensions/v1beta1
+metadata:
+  name: pypiserver-deployment
+  namespace: jaden-ci
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: pypiserver
+  template:
+    metadata:
+      labels:
+        app: pypiserver
+    spec:
+      hostname: pypiserver
+      dnsPolicy: ClusterFirst
+      containers:
+      - name: pypiserver
+        image: docker-registry.default.svc:5000/openshift/pypiserver:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8080
+        volumeMounts:
+        - mountPath: /data/packages
+          name: pypiserver
+      volumes:
+      - name: pypiserver
+        persistentVolumeClaim:
+          claimName: pypiserver-pvc
