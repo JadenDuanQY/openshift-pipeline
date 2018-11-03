@@ -21,3 +21,10 @@ spec:
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 8081
+        volumeMounts:
+        - mountPath: /sonatype-work
+          name: nexus
+      volumes:
+      - name: nexus
+        persistentVolumeClaim:
+          claimName: nexus-pvc
