@@ -6,7 +6,6 @@ metadata:
   name: pypiserver-service
   namespace: jaden-ci
 spec:
-  clusterIP: None
   ports:
   - port: 8080
     protocol: TCP

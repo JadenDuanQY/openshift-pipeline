@@ -80,6 +80,9 @@ objects:
           kind: ImageStreamTag
           name: python:${PYTHON_VERSION}
           namespace: openshift
+        env:
+          - name: "PIP_INDEX_URL"
+            value: http://pypiserver-service:8080
       type: Source
     triggers:
     - github:
