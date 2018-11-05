@@ -8,9 +8,9 @@ metadata:
 spec:
   clusterIP: None
   ports:
-  - port: 4873
+  - port: 8080
     protocol: TCP
-    targetPort: 4873
+    targetPort: 8080
     name: pypiserver
   selector:
     app: pypiserver
