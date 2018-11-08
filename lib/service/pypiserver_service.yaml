@@ -4,7 +4,6 @@ metadata:
   labels:
     app: pypiserver
   name: pypiserver-service
-  namespace: jaden-ci
 spec:
   ports:
   - port: 8080

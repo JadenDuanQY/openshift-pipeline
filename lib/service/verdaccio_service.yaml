@@ -4,7 +4,6 @@ metadata:
   labels:
     app: verdaccio
   name: verdaccio-service
-  namespace: jaden-ci
 spec:
   clusterIP: None
   ports:

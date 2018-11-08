@@ -4,7 +4,6 @@ metadata:
   labels:
     app: nexus
   name: nexus-service
-  namespace: jaden-test
 spec:
   ports:
   - port: 8081
