@@ -21,7 +21,7 @@ spec:
         ports:
         - containerPort: 4873
         volumeMounts:
-        - mountPath: /verdaccio
+        - mountPath: /verdaccio/storage
           name: verdaccio
       volumes:
       - name: verdaccio
