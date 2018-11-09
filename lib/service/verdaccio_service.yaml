@@ -5,7 +5,6 @@ metadata:
     app: verdaccio
   name: verdaccio-service
 spec:
-  clusterIP: None
   ports:
   - port: 4873
     protocol: TCP
