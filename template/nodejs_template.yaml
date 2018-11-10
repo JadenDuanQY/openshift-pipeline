@@ -80,6 +80,9 @@ objects:
           kind: ImageStreamTag
           name: nodejs:${NODEJS_VERSION}
           namespace: openshift
+        env:
+          - name: "NPM_MIRROR"
+            value: http://verdaccio-jaden-test.qyos.novalocal/         
       type: Source
     triggers:
     - github:

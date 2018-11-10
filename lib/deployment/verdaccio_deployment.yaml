@@ -18,6 +18,7 @@ spec:
       - name: verdaccio
         image: docker-registry.default.svc:5000/openshift/verdaccio:latest
         imagePullPolicy: IfNotPresent
+        command: ["/usr/local/app/bin/verdaccio", "--config", "/verdaccio/storage/config.yaml", "--listen", "http://0.0.0.0:4873"]
         ports:
         - containerPort: 4873
         volumeMounts:
