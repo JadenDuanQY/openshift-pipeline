@@ -1,12 +1,12 @@
 apiVersion: template.openshift.io/v1
 kind: Template
 labels:
-  template: springboot-template
+  template: springboot-template-pv
 metadata:
   annotations:
-    description: springboot-template
+    description: springboot-template-pv
     tags: quickstart
-  name: springboot-template
+  name: springboot-template-pv
 objects:
 - apiVersion: v1
   kind: BuildConfig
