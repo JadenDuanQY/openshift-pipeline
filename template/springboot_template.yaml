@@ -42,6 +42,7 @@ objects:
   spec:
     ports:
     - port: ${PORT}
+      name: ${APPLICATION_NAME}
       targetPort: ${{PORT}}
     selector:
       deploymentConfig: ${APPLICATION_NAME}
