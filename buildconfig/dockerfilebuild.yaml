@@ -1,0 +1,38 @@
+apiVersion: build.openshift.io/v1
+kind: BuildConfig
+metadata:
+  labels:
+    app: test-docker-dockerbuilder-from-image
+  name: test-docker-dockerbuilder-from-image
+  namespace: cybersquare-cicd
+spec:
+  failedBuildsHistoryLimit: 5
+  nodeSelector: null
+  output:
+    pushSecret:
+      name: harbor-registry
+    to:
+      kind: DockerImage
+      name: harbor-harbor-registry.default.svc:5000/test/springboot-demo/springboot-demo:v1.0.1
+  postCommit: {}
+  resources: {}
+  runPolicy: Serial
+  source:
+    binary:
+      asFile: springboot-demo-0.0.1-SNAPSHOT.jar-importer.tar
+    dockerfile: |-
+      FROM openjdk:8-jdk-alpine
+      ADD springboot-demo-0.0.1-SNAPSHOT.jar-importer.tar /
+      ENTRYPOINT ["java", "-jar", "/springboot-demo-0.0.1-SNAPSHOT.jar-importer.jar"]
+    images: 
+    - as: 
+      - "openjdk-8-jdk-alpine"
+      from:
+        kind: DockerImage
+        name: harbor-harbor-registry.default.svc:5000/cicd/openjdk:8-jdk-alpine
+    type: Binary
+  strategy:
+    dockerStrategy: {}
+    type: Docker
+  successfulBuildsHistoryLimit: 5
+  triggers: []
