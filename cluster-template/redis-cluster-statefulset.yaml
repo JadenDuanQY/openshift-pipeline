@@ -1,0 +1,191 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: redis
+data:
+  redis.config: |
+    bind 0.0.0.0
+    protected-mode yes
+    port 6379
+    tcp-backlog 511
+    timeout 0
+    tcp-keepalive 300
+    daemonize no
+    supervised no
+    pidfile /var/run/redis_6379.pid
+    loglevel notice
+    logfile
+    databases 16
+    always-show-logo yes
+    save 900 1
+    save 300 10
+    save 60 10000
+    stop-writes-on-bgsave-error yes
+    rdbcompression yes
+    rdbchecksum yes
+    dbfilename dump.rdb
+    dir ./
+    replica-serve-stale-data yes
+    replica-read-only yes
+    repl-diskless-sync no
+    repl-diskless-sync-delay 5
+    repl-disable-tcp-nodelay no
+    replica-priority 100
+    requirepass P@ssw0rd!
+    lazyfree-lazy-eviction no
+    lazyfree-lazy-expire no
+    lazyfree-lazy-server-del no
+    replica-lazy-flush no
+    appendonly yes
+    appendfilename "appendonly.aof"
+    appendfsync everysec
+    no-appendfsync-on-rewrite no
+    auto-aof-rewrite-percentage 100
+    auto-aof-rewrite-min-size 64mb
+    aof-load-truncated yes
+    aof-use-rdb-preamble yes
+    lua-time-limit 5000
+    slowlog-log-slower-than 10000
+    slowlog-max-len 128
+    latency-monitor-threshold 0
+    notify-keyspace-events ""
+    hash-max-ziplist-entries 512
+    hash-max-ziplist-value 64
+    list-max-ziplist-size -2
+    list-compress-depth 0
+    set-max-intset-entries 512
+    zset-max-ziplist-entries 128
+    zset-max-ziplist-value 64
+    hll-sparse-max-bytes 3000
+    stream-node-max-bytes 4096
+    stream-node-max-entries 100
+    activerehashing yes
+    client-output-buffer-limit normal 0 0 0
+    client-output-buffer-limit replica 256mb 64mb 60
+    client-output-buffer-limit pubsub 32mb 8mb 60
+    hz 10
+    dynamic-hz yes
+    aof-rewrite-incremental-fsync yes
+    rdb-save-incremental-fsync yes
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: redis-data
+spec:
+  accessModes:
+  - ReadWriteOnce
+  capacity:
+    storage: 5Gi
+  nfs:
+    path: /mnt/redis-data
+    server: 192.168.2.27
+  persistentVolumeReclaimPolicy: Retain
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: redis-data
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
+  volumeName: redis-data
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis-cluster
+  labels:
+    app: redis-cluster
+spec:
+  ports:
+  - port: 6379
+    name: redis
+  clusterIP: None
+  selector:
+    app: redis-cluster
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: redis-cluster
+spec:
+  selector:
+    matchLabels:
+      app: redis-cluster # has to match .spec.template.metadata.labels
+  serviceName: "redis-cluster"
+  replicas: 6 # by default is 1
+  template:
+    metadata:
+      labels:
+        app: redis-cluster # has to match .spec.selector.matchLabels
+    spec:
+      terminationGracePeriodSeconds: 10
+      initContainers:
+      - name: init-redis-cluster
+        image: harbor-harbor-registry.default.svc:5000/jaden/busybox:1.25.0
+        command:
+        - sh
+        - "-c"
+        - |
+          set -ex
+          # Generate mysql server-id from pod ordinal index.
+          # 确认主机名是多实例
+          #[[ `hostname` =~ -([0-9]+)$ ]] || exit 1  
+          cp /mnt/config-map/redis.config /mnt/conf.d/
+          redislog="/data/`hostname`/access.log"
+          sed -i "s|logfile|logfile `echo $redislog`|" /mnt/conf.d/redis.config
+          sed -i "s|dir ./|dir /data/`hostname`/|" /mnt/conf.d/redis.config
+          #sed -i 's|# requirepass foobared|requirepass testdb|' redis.config
+          #sed -i 's|appendonly no|appendonly yes|' redis.conf
+          #sed -i 's|bind 127.0.0.1|bind 0.0.0.0|' redis.conf
+          #pod实例序号
+          #ordinal=${BASH_REMATCH[1]}
+          #echo [mysqld] > /mnt/conf.d/server-id.cnf
+          # Add an offset to avoid reserved server-id=0 value.
+          #echo server-id=$((100 + $ordinal)) >> /mnt/conf.d/server-id.cnf
+          # Copy appropriate conf.d files from config-map to emptyDir.
+          # if [[ $ordinal -eq 0 ]]; then
+          #   cp /mnt/config-map/master.cnf /mnt/conf.d/
+          # else
+          #   cp /mnt/config-map/slave.cnf /mnt/conf.d/
+          # fi
+        volumeMounts:
+        - name: config
+          mountPath: /mnt/conf.d
+        - name: config-map
+          mountPath: "/mnt/config-map"
+      containers:
+      - name: redis-cluster
+        image: harbor-harbor-registry.default.svc:5000/jaden/redis:6.0.1-alpine
+        command:
+        - sh
+        - "-c"
+        - |
+          if [ ! -d /data/`hostname` ]; then
+                  mkdir /data/`hostname`
+          fi 
+          redis-server /usr/local/etc/redis/redis.config 
+        ports:
+        - containerPort: 6379
+          name: redis
+        volumeMounts:
+        - name: config
+          mountPath: /usr/local/etc/redis
+        - name: redis-data
+          mountPath: /data
+      volumes:
+        - name: config
+          emptyDir: {}
+        # You set volumes at the Pod level, then mount them into containers inside that Pod
+        - name: config-map
+          configMap:
+            # Provide the name of the ConfigMap you want to mount.
+            name: redis 
+        - name: redis-data
+          persistentVolumeClaim:
+            claimName: redis-data
+
